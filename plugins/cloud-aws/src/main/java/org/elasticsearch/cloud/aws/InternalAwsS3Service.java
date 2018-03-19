@@ -54,7 +54,7 @@ public class InternalAwsS3Service extends AbstractLifecycleComponent<AwsS3Servic
     }
 
     @Override
-    public synchronized AmazonS3 client(String endpoint, String protocol, String region, String account, String key, Integer maxRetries,
+    public synchronized AmazonS3 client(String endpoint, String protocol, String region, String account, String key, String sessionToken, Integer maxRetries,
                                         boolean useThrottleRetries, Boolean pathStyleAccess) {
         if (region != null && endpoint == null) {
             endpoint = getEndpoint(region);
@@ -67,11 +67,11 @@ public class InternalAwsS3Service extends AbstractLifecycleComponent<AwsS3Servic
             key = settings.get(CLOUD_S3.SECRET, settings.get(CLOUD_AWS.SECRET));
         }
 
-        return getClient(endpoint, protocol, account, key, maxRetries, useThrottleRetries, pathStyleAccess);
+        return getClient(endpoint, protocol, account, key, sessionToken, maxRetries, useThrottleRetries, pathStyleAccess);
     }
 
 
-    private synchronized AmazonS3 getClient(String endpoint, String protocol, String account, String key, Integer maxRetries,
+    private synchronized AmazonS3 getClient(String endpoint, String protocol, String account, String key, String sessionToken, Integer maxRetries,
                                             boolean useThrottleRetries, Boolean pathStyleAccess) {
         Tuple<String, String> clientDescriptor = new Tuple<String, String>(endpoint, account);
         AmazonS3Client client = clients.get(clientDescriptor);
@@ -138,10 +138,10 @@ public class InternalAwsS3Service extends AbstractLifecycleComponent<AwsS3Servic
                     new SystemPropertiesCredentialsProvider(),
                     new InstanceProfileCredentialsProvider()
             );
+        } else if (sessionToken == null || sessionToken.isEmpty()) {
+            credentials = new StaticCredentialsProvider(new BasicAWSCredentials(account, key));
         } else {
-            credentials = new AWSCredentialsProviderChain(
-                    new StaticCredentialsProvider(new BasicAWSCredentials(account, key))
-            );
+            credentials = new StaticCredentialsProvider(new BasicSessionCredentials(account, key, sessionToken));
         }
         client = new AmazonS3Client(credentials, clientConfiguration);
 
