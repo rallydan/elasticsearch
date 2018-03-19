@@ -60,6 +60,6 @@ public interface AwsS3Service extends LifecycleComponent<AwsS3Service> {
         public static final String PATH_STYLE_ACCESS = "repositories.s3.path_style_access";
     }
 
-    AmazonS3 client(String endpoint, String protocol, String region, String account, String key, Integer maxRetries,
+    AmazonS3 client(String endpoint, String protocol, String region, String account, String key, String sessionToken, Integer maxRetries,
                     boolean useThrottleRetries, Boolean pathStyleAccess);
 }
