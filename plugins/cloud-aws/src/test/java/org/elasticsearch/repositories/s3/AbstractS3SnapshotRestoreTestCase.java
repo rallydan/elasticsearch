@@ -208,6 +208,7 @@ abstract public class AbstractS3SnapshotRestoreTestCase extends AbstractAwsTestC
             bucket.get("region", settings.get("repositories.s3.region")),
             bucket.get("access_key", settings.get("cloud.aws.access_key")),
             bucket.get("secret_key", settings.get("cloud.aws.secret_key")),
+            bucket.get("session_token", settings.get("cloud.aws.session_token")),
             null, randomBoolean(), null);
 
         String bucketName = bucket.get("bucket");
@@ -467,12 +468,13 @@ abstract public class AbstractS3SnapshotRestoreTestCase extends AbstractAwsTestC
             String region = bucket.get("region", settings.get("repositories.s3.region"));
             String accessKey = bucket.get("access_key", settings.get("cloud.aws.access_key"));
             String secretKey = bucket.get("secret_key", settings.get("cloud.aws.secret_key"));
+            String sessionToken = bucket.get("session_token", settings.get("cloud.aws.session_token"));
             String bucketName = bucket.get("bucket");
 
             // We check that settings has been set in elasticsearch.yml integration test file
             // as described in README
             assertThat("Your settings in elasticsearch.yml are incorrects. Check README file.", bucketName, notNullValue());
-            AmazonS3 client = internalCluster().getInstance(AwsS3Service.class).client(endpoint, protocol, region, accessKey, secretKey,
+            AmazonS3 client = internalCluster().getInstance(AwsS3Service.class).client(endpoint, protocol, region, accessKey, secretKey, sessionToken,
                 null, randomBoolean(), null);
             try {
                 ObjectListing prevListing = null;

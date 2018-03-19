@@ -133,7 +133,7 @@ public class S3Repository extends BlobStoreRepository {
             storageClass, pathStyleAccess);
 
         blobStore = new S3BlobStore(settings, s3Service.client(endpoint, protocol, region, repositorySettings.settings().get("access_key"),
-            repositorySettings.settings().get("secret_key"), maxRetries, useThrottleRetries, pathStyleAccess),
+            repositorySettings.settings().get("secret_key"), repositorySettings.settings().get("session_token"), maxRetries, useThrottleRetries, pathStyleAccess),
             bucket, region, serverSideEncryption, bufferSize, maxRetries, cannedACL, storageClass);
 
         String basePath = repositorySettings.settings().get("base_path", settings.get(REPOSITORY_S3.BASE_PATH));
